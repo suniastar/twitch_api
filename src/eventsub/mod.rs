@@ -83,6 +83,7 @@ use serde_derive::{Deserialize, Serialize};
 
 use crate::parse_json;
 
+pub mod automod;
 pub mod channel;
 pub mod conduit;
 pub mod event;

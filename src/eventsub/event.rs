@@ -11,31 +11,46 @@ use super::*;
 macro_rules! fill_events {
     ($callback:ident( $($args:tt)* )) => {
         $callback!($($args)*
+            automod::AutomodMessageHoldV1;
+            // TODO missing: automod.message.update
+            // TODO missing: automod.settings.update
+            // TODO missing: automod.terms.update
             channel::ChannelAdBreakBeginV1;
             channel::ChannelBanV1;
+            // TODO missing: channel.channel_points.automatic_reward_redemption.add
+            channel::ChannelPointsCustomRewardAddV1;
+            channel::ChannelPointsCustomRewardRemoveV1;
+            channel::ChannelPointsCustomRewardUpdateV1;
+            channel::ChannelPointsCustomRewardRedemptionAddV1;
+            channel::ChannelPointsCustomRewardRedemptionUpdateV1;
             channel::ChannelCharityCampaignDonateV1;
             channel::ChannelCharityCampaignProgressV1;
             channel::ChannelCharityCampaignStartV1;
             channel::ChannelCharityCampaignStopV1;
-            channel::ChannelChatClearUserMessagesV1;
             channel::ChannelChatClearV1;
+            channel::ChannelChatClearUserMessagesV1;
             channel::ChannelChatMessageV1;
             channel::ChannelChatMessageDeleteV1;
             channel::ChannelChatNotificationV1;
+            // TODO missing: channel.chat.user_message_hold
+            // TODO missing: channel.chat.user_message_update
+            // TODO missing: channel.chat_settings.update
             channel::ChannelCheerV1;
             channel::ChannelFollowV1;
             channel::ChannelFollowV2;
             channel::ChannelGoalBeginV1;
             channel::ChannelGoalEndV1;
             channel::ChannelGoalProgressV1;
+            // TODO missing: channel.guest_star_guest.update
+            // TODO missing: channel.guest_star_session.begin
+            // TODO missing: channel.guest_star_session.end
+            // TODO missing: channel.guest_star_session.update
             channel::ChannelHypeTrainBeginV1;
             channel::ChannelHypeTrainEndV1;
             channel::ChannelHypeTrainProgressV1;
-            channel::ChannelPointsCustomRewardAddV1;
-            channel::ChannelPointsCustomRewardRedemptionAddV1;
-            channel::ChannelPointsCustomRewardRedemptionUpdateV1;
-            channel::ChannelPointsCustomRewardRemoveV1;
-            channel::ChannelPointsCustomRewardUpdateV1;
+            // TODO missing: channel.moderate
+            // TODO missing: channel.moderator.add
+            // TODO missing: channel.moderator.remove
             channel::ChannelPollBeginV1;
             channel::ChannelPollEndV1;
             channel::ChannelPollProgressV1;
@@ -52,15 +67,24 @@ macro_rules! fill_events {
             channel::ChannelSubscriptionEndV1;
             channel::ChannelSubscriptionGiftV1;
             channel::ChannelSubscriptionMessageV1;
+            // TODO missing: channel.suspicious_user.message
+            // TODO missing: channel.suspicious_user.update
             channel::ChannelUnbanV1;
+            // TODO missing: channel.unban_request.create
+            // TODO missing: channel.unban_request.resolve
             channel::ChannelUpdateV1;
             channel::ChannelUpdateV2;
+            // TODO missing: channel.vip.add
+            // TODO missing: channel.vip.remove
             conduit::ConduitShardDisabledV1;
+            // TODO missing: drop.entitlement.grant
+            // TODO missing: extension.bits_transaction.create
             stream::StreamOfflineV1;
             stream::StreamOnlineV1;
             user::UserAuthorizationGrantV1;
             user::UserAuthorizationRevokeV1;
             user::UserUpdateV1;
+            // TODO missing: user.whisper.message
         )
     };
 }
@@ -135,8 +159,38 @@ macro_rules! make_event_type {
 pub struct EventTypeParseError;
 
 make_event_type!("Event Types": pub enum EventType {
+    "a user is notified if a message is caught by automod for review.":
+    AutomodMessageHold => "automod.message.hold",
+    "a message in the automod queue had its status changed.":
+    AutomodMessageUpdate => "automod.message.update",
+    "a notification is sent when a broadcaster’s automod settings are updated.":
+    AutomodSettingsUpdate => "automod.settings.update",
+    "a notification is sent when a broadcaster’s automod terms are updated. Changes to private terms are not sent.":
+    AutomodTermsUpdate => "automod.terms.update",
     "a user runs a midroll commercial break, either manually or automatically via ads manager.":
     ChannelAdBreakBegin => "channel.ad_break.begin",
+    "a viewer is banned from the specified channel.":
+    ChannelBan => "channel.ban",
+    "a viewer has redeemed an automatic channel points reward on the specified channel.":
+    ChannelPointsAutomaticRewardRedemption => "channel.channel_points_automatic_reward_redemption.add",
+    "a custom channel points reward has been created for the specified channel.":
+    ChannelPointsCustomRewardAdd => "channel.channel_points_custom_reward.add",
+    "a custom channel points reward has been removed from the specified channel.":
+    ChannelPointsCustomRewardRemove => "channel.channel_points_custom_reward.remove",
+    "a custom channel points reward has been updated for the specified channel.":
+    ChannelPointsCustomRewardUpdate => "channel.channel_points_custom_reward.update",
+    "a viewer has redeemed a custom channel points reward on the specified channel.":
+    ChannelPointsCustomRewardRedemptionAdd => "channel.channel_points_custom_reward_redemption.add",
+    "a redemption of a channel points custom reward has been updated for the specified channel.":
+    ChannelPointsCustomRewardRedemptionUpdate => "channel.channel_points_custom_reward_redemption.update",
+    "a user donates to the broadcaster’s charity campaign.":
+    ChannelCharityCampaignDonate => "channel.charity_campaign.donate",
+    "progress is made towards the campaign’s goal or when the broadcaster changes the fundraising goal.":
+    ChannelCharityCampaignProgress => "channel.charity_campaign.progress",
+    "a broadcaster starts a charity campaign.":
+    ChannelCharityCampaignStart => "channel.charity_campaign.start",
+    "a broadcaster stops a charity campaign.":
+    ChannelCharityCampaignStop => "channel.charity_campaign.stop",
     "a moderator or bot clears all messages from the chat room.":
     ChannelChatClear => "channel.chat.clear",
     "a moderator or bot clears all messages for a specific user.":
@@ -147,90 +201,108 @@ make_event_type!("Event Types": pub enum EventType {
     ChannelChatMessageDelete => "channel.chat.message_delete",
     "an event that appears in chat occurs, such as someone subscribing to the channel or a subscription is gifted.":
     ChannelChatNotification => "channel.chat.notification",
-    "a user donates to the broadcaster’s charity campaign.":
-    ChannelCharityCampaignDonate => "channel.charity_campaign.donate",
-    "progress is made towards the campaign’s goal or when the broadcaster changes the fundraising goal.":
-    ChannelCharityCampaignProgress => "channel.charity_campaign.progress",
-    "a broadcaster starts a charity campaign.":
-    ChannelCharityCampaignStart => "channel.charity_campaign.start",
-    "a broadcaster stops a charity campaign.":
-    ChannelCharityCampaignStop => "channel.charity_campaign.stop",
-    "subscription type sends notifications when a broadcaster updates the category, title, mature flag, or broadcast language for their channel.":
-    ChannelUpdate => "channel.update",
-    "a specified channel receives a follow.":
-    ChannelFollow => "channel.follow",
-    "a specified channel receives a subscriber. This does not include resubscribes.":
-    ChannelSubscribe => "channel.subscribe",
+    "a user is notified if their message is caught by automod.":
+    ChannelChatUserMessageHold => "channel.chat.user_message_hold",
+    "a user is notified if their message’s automod status is updated.":
+    ChannelChatUserMessageUpdate => "channel.chat.user_message_update",
+    "a notification for when a broadcaster’s chat settings are updated.":
+    ChannelChatSettingsUpdate => "channel.chat_settings.update",
     "a user cheers on the specified channel.":
     ChannelCheer => "channel.cheer",
-    "a viewer is banned from the specified channel.":
-    ChannelBan => "channel.ban",
-    "a viewer is unbanned from the specified channel.":
-    ChannelUnban => "channel.unban",
-    "a custom channel points reward has been created for the specified channel.":
-    ChannelPointsCustomRewardAdd => "channel.channel_points_custom_reward.add",
-    "a custom channel points reward has been updated for the specified channel.":
-    ChannelPointsCustomRewardUpdate => "channel.channel_points_custom_reward.update",
-    "a custom channel points reward has been removed from the specified channel.":
-    ChannelPointsCustomRewardRemove => "channel.channel_points_custom_reward.remove",
-    "a viewer has redeemed a custom channel points reward on the specified channel.":
-    ChannelPointsCustomRewardRedemptionAdd => "channel.channel_points_custom_reward_redemption.add",
-    "a redemption of a channel points custom reward has been updated for the specified channel.":
-    ChannelPointsCustomRewardRedemptionUpdate => "channel.channel_points_custom_reward_redemption.update",
+    "a specified channel receives a follow.":
+    ChannelFollow => "channel.follow",
+    "a goal begins on the specified channel.":
+    ChannelGoalBegin => "channel.goal.begin",
+    "a goal ends on the specified channel.":
+    ChannelGoalEnd => "channel.goal.end",
+    "a goal makes progress on the specified channel.":
+    ChannelGoalProgress => "channel.goal.progress",
+    "a guest or a slot is updated in an active Guest Star session.":
+    ChannelGuestStarGuestUpdate => "channel.guest_star_guest.update",
+    "the host began a new Guest Star session.":
+    ChannelGuestStarSessionBegin => "channel.guest_star_session.begin",
+    "a running Guest Star session has ended.":
+    ChannelGuestStarSessionEnd => "channel.guest_star_session.end",
+    "the host preferences for Guest Star have been updated.":
+    ChannelGuestStarSessionUpdate => "channel.guest_star_settings.update",
+    "a hype train begins on the specified channel.":
+    ChannelHypeTrainBegin => "channel.hype_train.begin",
+    "a hype train ends on the specified channel.":
+    ChannelHypeTrainEnd => "channel.hype_train.end",
+    "a hype train makes progress on the specified channel.":
+    ChannelHypeTrainProgress => "channel.hype_train.progress",
+    "a moderator performs a moderation action in a channel.":
+    ChannelModerate => "channel.moderate",
+    "moderator privileges were added to a user on a specified channel.":
+    ChannelModeratorAdd => "channel.moderator.add",
+    "moderator privileges were removed from a user on a specified channel.":
+    ChannelModeratorRemove => "channel.moderator.remove",
     "a poll begins on the specified channel.":
     ChannelPollBegin => "channel.poll.begin",
-    "a user responds to a poll on the specified channel.":
-    ChannelPollProgress => "channel.poll.progress",
     "a poll ends on the specified channel.":
     ChannelPollEnd => "channel.poll.end",
+    "a user responds to a poll on the specified channel.":
+    ChannelPollProgress => "channel.poll.progress",
     "a Prediction begins on the specified channel":
     ChannelPredictionBegin => "channel.prediction.begin",
-    "a user participates in a Prediction on the specified channel.":
-    ChannelPredictionProgress => "channel.prediction.progress",
-    "a Prediction is locked on the specified channel.":
-    ChannelPredictionLock => "channel.prediction.lock",
     "a Prediction ends on the specified channel.":
     ChannelPredictionEnd => "channel.prediction.end",
+    "a Prediction is locked on the specified channel.":
+    ChannelPredictionLock => "channel.prediction.lock",
+    "a user participates in a Prediction on the specified channel.":
+    ChannelPredictionProgress => "channel.prediction.progress",
+    "a broadcaster raids another broadcaster’s channel.":
+    ChannelRaid => "channel.raid",
+    "a channel activates shield mode":
+    ChannelShieldModeBegin => "channel.shield_mode.begin",
+    "a channel deactivates shield mode":
+    ChannelShieldModeEnd => "channel.shield_mode.end",
     "a specified broadcaster sends a Shoutout.":
     ChannelShoutoutCreate => "channel.shoutout.create",
     "a specified broadcaster receives a Shoutout.":
     ChannelShoutoutReceive => "channel.shoutout.receive",
-    "a broadcaster raids another broadcaster’s channel.":
-    ChannelRaid => "channel.raid",
+    "a specified channel receives a subscriber. This does not include resubscribes.":
+    ChannelSubscribe => "channel.subscribe",
     "a subscription to the specified channel expires.":
     ChannelSubscriptionEnd => "channel.subscription.end",
     "a user gives one or more gifted subscriptions in a channel.":
     ChannelSubscriptionGift => "channel.subscription.gift",
     "a user sends a resubscription chat message in a specific channel":
     ChannelSubscriptionMessage => "channel.subscription.message",
-    "a channel activates shield mode":
-    ChannelShieldModeBegin => "channel.shield_mode.begin",
-    "a channel deactivates shield mode":
-    ChannelShieldModeEnd => "channel.shield_mode.end",
-    "a goal begins on the specified channel.":
-    ChannelGoalBegin => "channel.goal.begin",
-    "a goal makes progress on the specified channel.":
-    ChannelGoalProgress => "channel.goal.progress",
-    "a goal ends on the specified channel.":
-    ChannelGoalEnd => "channel.goal.end",
-    "a hype train begins on the specified channel.":
-    ChannelHypeTrainBegin => "channel.hype_train.begin",
-    "a hype train makes progress on the specified channel.":
-    ChannelHypeTrainProgress => "channel.hype_train.progress",
-    "a hype train ends on the specified channel.":
-    ChannelHypeTrainEnd => "channel.hype_train.end",
+    "a chat message has been sent by a suspicious user.":
+    ChannelSuspiciousUserMessage => "channel.suspicious_user.message",
+    "a suspicious user has been updated.":
+    ChannelSuspiciousUserUpdate => "channel.suspicious_user.update",
+    "a viewer is unbanned from the specified channel.":
+    ChannelUnban => "channel.unban",
+    "a user creates an unban request.":
+    ChannelUnbanRequestCreate => "channel.unban_request.create",
+    "an unban request has been resolved.":
+    ChannelUnbanRequestResolve => "channel.unban_request.resolve",
+    "subscription type sends notifications when a broadcaster updates the category, title, mature flag, or broadcast language for their channel.":
+    ChannelUpdate => "channel.update",
+    "a VIP is added to the channel.":
+    ChannelVipAdd => "channel.vip.add",
+    "a VIP is removed from the channel.":
+    ChannelVipRemove => "channel.vip.remove",
     "sends a notification when eventsub disables a shard due to the status of the underlying transport changing.":
     ConduitShardDisabled => "conduit.shard.disabled",
-    "the specified broadcaster starts a stream.":
-    StreamOnline => "stream.online",
+    "an entitlement for a drop is granted to a user.":
+    DropEntitlementGran => "drop.entitlement.grant",
+    "a bits transaction occurred for a specified twitch extension.":
+    ExtensionBitsTransactionCreate => "extension.bits_transaction.create",
     "the specified broadcaster stops a stream.":
     StreamOffline => "stream.offline",
-    "user updates their account.":
-    UserUpdate => "user.update",
-    "a user has revoked authorization for your client id. Use this webhook to meet government requirements for handling user data, such as GDPR, LGPD, or CCPA.":
-    UserAuthorizationRevoke => "user.authorization.revoke",
+    "the specified broadcaster starts a stream.":
+    StreamOnline => "stream.online",
     "a user’s authorization has been granted to your client id.":
     UserAuthorizationGrant => "user.authorization.grant",
+    "a user has revoked authorization for your client id. Use this webhook to meet government requirements for handling user data, such as GDPR, LGPD, or CCPA.":
+    UserAuthorizationRevoke => "user.authorization.revoke",
+    "user updates their account.":
+    UserUpdate => "user.update",
+    "a user receives a whisper.":
+    WhisperReceive => "user.whisper.receive",
 },
     to_str: r#"Get the event string of this event.
 ```
@@ -250,8 +322,38 @@ fn main() {
 #[allow(clippy::large_enum_variant)]
 #[non_exhaustive]
 pub enum Event {
+    /// Automod Message Hold V1 Event
+    AutomodMessageHoldV1(Payload<automod::AutomodMessageHoldV1>),
+    // TODO missing: automod.message.update
+    // TODO missing: automod.settings.update
+    // TODO missing: automod.terms.update
     /// Channel Ad Break Begin V1 Event
     ChannelAdBreakBeginV1(Payload<channel::ChannelAdBreakBeginV1>),
+    /// Channel Ban V1 Event
+    ChannelBanV1(Payload<channel::ChannelBanV1>),
+    // TODO missing: channel.channel_points.automatic_reward_redemption.add
+    /// Channel Points Custom Reward Add V1 Event
+    ChannelPointsCustomRewardAddV1(Payload<channel::ChannelPointsCustomRewardAddV1>),
+    /// Channel Points Custom Reward Remove V1 Event
+    ChannelPointsCustomRewardRemoveV1(Payload<channel::ChannelPointsCustomRewardRemoveV1>),
+    /// Channel Points Custom Reward Update V1 Event
+    ChannelPointsCustomRewardUpdateV1(Payload<channel::ChannelPointsCustomRewardUpdateV1>),
+    /// Channel Points Custom Reward Redemption Add V1 Event
+    ChannelPointsCustomRewardRedemptionAddV1(
+        Payload<channel::ChannelPointsCustomRewardRedemptionAddV1>,
+    ),
+    /// Channel Points Custom Reward Redemption Update V1 Event
+    ChannelPointsCustomRewardRedemptionUpdateV1(
+        Payload<channel::ChannelPointsCustomRewardRedemptionUpdateV1>,
+    ),
+    /// Channel Charity Campaign Donate V1 Event
+    ChannelCharityCampaignDonateV1(Payload<channel::ChannelCharityCampaignDonateV1>),
+    /// Channel Charity Campaign Progress V1 Event
+    ChannelCharityCampaignProgressV1(Payload<channel::ChannelCharityCampaignProgressV1>),
+    /// Channel Charity Campaign Start V1 Event
+    ChannelCharityCampaignStartV1(Payload<channel::ChannelCharityCampaignStartV1>),
+    /// Channel Charity Campaign Stop V1 Event
+    ChannelCharityCampaignStopV1(Payload<channel::ChannelCharityCampaignStopV1>),
     /// Channel Chat Clear V1 Event
     ChannelChatClearV1(Payload<channel::ChannelChatClearV1>),
     /// Channel Chat ClearUserMessages V1 Event
@@ -262,60 +364,49 @@ pub enum Event {
     ChannelChatMessageDeleteV1(Payload<channel::ChannelChatMessageDeleteV1>),
     /// Channel Chat Notification V1 Event
     ChannelChatNotificationV1(Payload<channel::ChannelChatNotificationV1>),
-    /// Channel Charity Campaign Donate V1 Event
-    ChannelCharityCampaignDonateV1(Payload<channel::ChannelCharityCampaignDonateV1>),
-    /// Channel Charity Campaign Progress V1 Event
-    ChannelCharityCampaignProgressV1(Payload<channel::ChannelCharityCampaignProgressV1>),
-    /// Channel Charity Campaign Start V1 Event
-    ChannelCharityCampaignStartV1(Payload<channel::ChannelCharityCampaignStartV1>),
-    /// Channel Charity Campaign Stop V1 Event
-    ChannelCharityCampaignStopV1(Payload<channel::ChannelCharityCampaignStopV1>),
-    /// Channel Update V1 Event
-    #[deprecated(note = "use `Event::ChannelUpdateV2` instead")]
-    ChannelUpdateV1(Payload<channel::ChannelUpdateV1>),
-    /// Channel Update V2 Event
-    ChannelUpdateV2(Payload<channel::ChannelUpdateV2>),
+    // TODO missing: channel.chat.user_message_hold
+    // TODO missing: channel.chat.user_message_update
+    // TODO missing: channel.chat_settings.update
+    /// Channel Cheer V1 Event
+    ChannelCheerV1(Payload<channel::ChannelCheerV1>),
     /// Channel Follow V1 Event
     #[deprecated(note = "use `Event::ChannelFollowV2` instead")]
     ChannelFollowV1(Payload<channel::ChannelFollowV1>),
     /// Channel Follow V2 Event
     ChannelFollowV2(Payload<channel::ChannelFollowV2>),
-    /// Channel Subscribe V1 Event
-    ChannelSubscribeV1(Payload<channel::ChannelSubscribeV1>),
-    /// Channel Cheer V1 Event
-    ChannelCheerV1(Payload<channel::ChannelCheerV1>),
-    /// Channel Ban V1 Event
-    ChannelBanV1(Payload<channel::ChannelBanV1>),
-    /// Channel Unban V1 Event
-    ChannelUnbanV1(Payload<channel::ChannelUnbanV1>),
-    /// Channel Points Custom Reward Add V1 Event
-    ChannelPointsCustomRewardAddV1(Payload<channel::ChannelPointsCustomRewardAddV1>),
-    /// Channel Points Custom Reward Update V1 Event
-    ChannelPointsCustomRewardUpdateV1(Payload<channel::ChannelPointsCustomRewardUpdateV1>),
-    /// Channel Points Custom Reward Remove V1 Event
-    ChannelPointsCustomRewardRemoveV1(Payload<channel::ChannelPointsCustomRewardRemoveV1>),
-    /// Channel Points Custom Reward Redemption Add V1 Event
-    ChannelPointsCustomRewardRedemptionAddV1(
-        Payload<channel::ChannelPointsCustomRewardRedemptionAddV1>,
-    ),
-    /// Channel Points Custom Reward Redemption Update V1 Event
-    ChannelPointsCustomRewardRedemptionUpdateV1(
-        Payload<channel::ChannelPointsCustomRewardRedemptionUpdateV1>,
-    ),
+    /// Channel Goal Begin V1 Event
+    ChannelGoalBeginV1(Payload<channel::ChannelGoalBeginV1>),
+    /// Channel Goal End V1 Event
+    ChannelGoalEndV1(Payload<channel::ChannelGoalEndV1>),
+    /// Channel Goal Progress V1 Event
+    ChannelGoalProgressV1(Payload<channel::ChannelGoalProgressV1>),
+    // TODO missing: channel.guest_star_guest.update
+    // TODO missing: channel.guest_star_session.begin
+    // TODO missing: channel.guest_star_session.end
+    // TODO missing: channel.guest_star_session.update
+    /// Channel Hype Train Begin V1 Event
+    ChannelHypeTrainBeginV1(Payload<channel::ChannelHypeTrainBeginV1>),
+    /// Channel Hype Train End V1 Event
+    ChannelHypeTrainEndV1(Payload<channel::ChannelHypeTrainEndV1>),
+    /// Channel Hype Train Progress V1 Event
+    ChannelHypeTrainProgressV1(Payload<channel::ChannelHypeTrainProgressV1>),
+    // TODO missing: channel.moderate
+    // TODO missing: channel.moderator.add
+    // TODO missing: channel.moderator.remove
     /// Channel Poll Begin V1 Event
     ChannelPollBeginV1(Payload<channel::ChannelPollBeginV1>),
-    /// Channel Poll Progress V1 Event
-    ChannelPollProgressV1(Payload<channel::ChannelPollProgressV1>),
     /// Channel Poll End V1 Event
     ChannelPollEndV1(Payload<channel::ChannelPollEndV1>),
+    /// Channel Poll Progress V1 Event
+    ChannelPollProgressV1(Payload<channel::ChannelPollProgressV1>),
     /// Channel Prediction Begin V1 Event
     ChannelPredictionBeginV1(Payload<channel::ChannelPredictionBeginV1>),
-    /// Channel Prediction Progress V1 Event
-    ChannelPredictionProgressV1(Payload<channel::ChannelPredictionProgressV1>),
-    /// Channel Prediction Lock V1 Event
-    ChannelPredictionLockV1(Payload<channel::ChannelPredictionLockV1>),
     /// Channel Prediction End V1 Event
     ChannelPredictionEndV1(Payload<channel::ChannelPredictionEndV1>),
+    /// Channel Prediction Lock V1 Event
+    ChannelPredictionLockV1(Payload<channel::ChannelPredictionLockV1>),
+    /// Channel Prediction Progress V1 Event
+    ChannelPredictionProgressV1(Payload<channel::ChannelPredictionProgressV1>),
     /// Channel Raid V1 Event
     ChannelRaidV1(Payload<channel::ChannelRaidV1>),
     /// Channel ShieldMode Begin V1 Event
@@ -326,36 +417,42 @@ pub enum Event {
     ChannelShoutoutCreateV1(Payload<channel::ChannelShoutoutCreateV1>),
     /// Channel Shoutout Receive V1 Event
     ChannelShoutoutReceiveV1(Payload<channel::ChannelShoutoutReceiveV1>),
-    /// Channel Goal Begin V1 Event
-    ChannelGoalBeginV1(Payload<channel::ChannelGoalBeginV1>),
-    /// Channel Goal Progress V1 Event
-    ChannelGoalProgressV1(Payload<channel::ChannelGoalProgressV1>),
-    /// Channel Goal End V1 Event
-    ChannelGoalEndV1(Payload<channel::ChannelGoalEndV1>),
-    /// Channel Hype Train Begin V1 Event
-    ChannelHypeTrainBeginV1(Payload<channel::ChannelHypeTrainBeginV1>),
-    /// Channel Hype Train Progress V1 Event
-    ChannelHypeTrainProgressV1(Payload<channel::ChannelHypeTrainProgressV1>),
-    /// Channel Hype Train End V1 Event
-    ChannelHypeTrainEndV1(Payload<channel::ChannelHypeTrainEndV1>),
-    /// Conduit Shard Disabled V1 Event
-    ConduitShardDisabledV1(Payload<conduit::ConduitShardDisabledV1>),
-    /// StreamOnline V1 Event
-    StreamOnlineV1(Payload<stream::StreamOnlineV1>),
-    /// StreamOffline V1 Event
-    StreamOfflineV1(Payload<stream::StreamOfflineV1>),
-    /// User Update V1 Event
-    UserUpdateV1(Payload<user::UserUpdateV1>),
-    /// User Authorization Grant V1 Event
-    UserAuthorizationGrantV1(Payload<user::UserAuthorizationGrantV1>),
-    /// User Authorization Revoke V1 Event
-    UserAuthorizationRevokeV1(Payload<user::UserAuthorizationRevokeV1>),
+    /// Channel Subscribe V1 Event
+    ChannelSubscribeV1(Payload<channel::ChannelSubscribeV1>),
     /// Channel Subscription End V1 Event
     ChannelSubscriptionEndV1(Payload<channel::ChannelSubscriptionEndV1>),
     /// Channel Subscription Gift V1 Event
     ChannelSubscriptionGiftV1(Payload<channel::ChannelSubscriptionGiftV1>),
     /// Channel Subscription Message V1 Event
     ChannelSubscriptionMessageV1(Payload<channel::ChannelSubscriptionMessageV1>),
+    // TODO missing: channel.suspicious_user.message
+    // TODO missing: channel.suspicious_user.update
+    /// Channel Unban V1 Event
+    ChannelUnbanV1(Payload<channel::ChannelUnbanV1>),
+    // TODO missing: channel.unban_request.create
+    // TODO missing: channel.unban_request.resolve
+    /// Channel Update V1 Event
+    #[deprecated(note = "use `Event::ChannelUpdateV2` instead")]
+    ChannelUpdateV1(Payload<channel::ChannelUpdateV1>),
+    /// Channel Update V2 Event
+    ChannelUpdateV2(Payload<channel::ChannelUpdateV2>),
+    // TODO missing: channel.vip.add
+    // TODO missing: channel.vip.remove
+    /// Conduit Shard Disabled V1 Event
+    ConduitShardDisabledV1(Payload<conduit::ConduitShardDisabledV1>),
+    // TODO missing: drop.entitlement.grant
+    // TODO missing: extension.bits_transaction.create
+    /// StreamOffline V1 Event
+    StreamOfflineV1(Payload<stream::StreamOfflineV1>),
+    /// StreamOnline V1 Event
+    StreamOnlineV1(Payload<stream::StreamOnlineV1>),
+    /// User Authorization Grant V1 Event
+    UserAuthorizationGrantV1(Payload<user::UserAuthorizationGrantV1>),
+    /// User Authorization Revoke V1 Event
+    UserAuthorizationRevokeV1(Payload<user::UserAuthorizationRevokeV1>),
+    /// User Update V1 Event
+    UserUpdateV1(Payload<user::UserUpdateV1>),
+    // TODO missing: user.whisper.message
 }
 
 impl Event {

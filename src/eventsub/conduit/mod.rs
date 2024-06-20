@@ -1,3 +1,4 @@
+#![doc(alias = "conduits")]
 //! Subscription types regarding conduits.
 use super::{EventSubscription, EventType};
 
